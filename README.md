@@ -2,7 +2,7 @@
 
 Distributed Applications and their internal building blocks exposed as reusable components that can be used for all kinds of p2p usecases
 
-[`peer-dapps`](https://github.com/search?q=topic%3Apeer-dapps+org%3Aipfs-shipyard+fork%3Atrue)
+[`peer-star`](https://github.com/search?q=topic%3Apeer-star+org%3Aipfs-shipyard+fork%3Atrue)
 
 ## Applications
 
