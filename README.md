@@ -33,7 +33,7 @@ const PeerStar = require('peer-star')
 
 ```js
 const identity:Identity = PeerStar.identity([identityStore:IdentityStore])
-const identities:Array<Identity> = identity.all()
+const identities:Map<String:Identity> = identity.all()
 const identity:Identity = identity.get('identity-id')
 ```
 
