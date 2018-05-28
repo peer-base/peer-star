@@ -18,17 +18,16 @@ When resolving a DID, a DID Document (DID-Doc) is returned. The DID-Doc contains
 
 ![did-schema](https://github.com/joaosantos15/peer-star/blob/master/figures/did-diagram-v1.jpg?raw=true)
 
+The entity in control of the identity has a pair of keys that should be stored in a secure endpoint. This can be viewed as the identity's root keys.
 
-Let us assume a user, Alice, owns an Ethereum smart-contract, which contains her root public key and pointers to her proofs of personhood.
-
-Alice’s root public key is her main public key, and can be hers Ethereum account public key. With that root private key, Alice can digitally sign new public keys, which can then be used to authenticate other devices she might have.
-The figure below illustrates the process of authorizing new devices. Alice starts by generating a key pair, using a secure endpoint. The private key is kept on the secure endpoint (in the image, Alice’s secure Endpoint (e.g.Metamask)). The public key is placed on Alice’s Ethereum Smart-Contract (in the image, Alice’s Smart-Contract), which is her DID-Document. Alice’s proofs of personhood are also maintained in the smart-contract (to reduce costs, the proofs can be pointed to using an IPFS link). 
+In the image below, Alice's root key is the same as her Ethereum account. The root public key is placed on Alice’s Ethereum Smart-Contract (in the image, Alice’s Smart-Contract), which is her DID-Document. Alice’s proofs of personhood are also maintained in the smart-contract (to reduce costs, the proofs can be pointed to using an IPFS link). Additionally, the root private key is stored and accessible in MetaMask.
 
 **Key point:** At this point, anyone who verifies Alice’s proofs-of-personhood - that is, anyone who is convinced that Alice is indeed the owner of that smart-contract and has the identity she claims to have - now knows that PubRoot-Alice is Alice’s root public key.
 
-Alice may wish to be able to authenticate herself using different devices. Currently, users of services such as Google Docs, are able to seamlessly use the services across all of their devices. The same should be possible with Peer-Identity. To achieve this, we propose a mechanism for device authorization. Looking at the case of authorizing a new smart-phone, she generates a new keypair for the device (the keys are generated locally in the device). Next, Alice uses her secure endpoint to sign the new public key, PubSmart-Phone-Alice using PrivRoot-Alice. The set of PubSmart-Phone-Alice and signature(PubSmart-Phone-Alice)PrivRoot-Alice is called the Presentation Package. Each device will have its own presentation package.
+Alice may wish to be able to authenticate herself using different devices. Currently, users of services such as Google Docs, are able to seamlessly use the services across all of their devices. The same should be possible with Peer-Identity. To achieve this, we propose a mechanism for device authorization depicted also in the image below. Looking at the case of authorizing a new smart-phone, she generates a new keypair for the device (the keys are generated locally in the device). Next, Alice uses her secure endpoint to sign the new public key, PubSmart-Phone-Alice using PrivRoot-Alice. The set of PubSmart-Phone-Alice and signature(PubSmart-Phone-Alice)PrivRoot-Alice is called the Presentation Package. Each device will have its own presentation package.
 
 **Key point:** The presentation package is used to authenticate any device. Any entity can verify a presentation package, by checking the device key was signed by the user’s root key.
+
 
 ![presentation-package](https://github.com/joaosantos15/peer-star/blob/master/figures/presentation-package-v1.jpg?raw=true)
 
