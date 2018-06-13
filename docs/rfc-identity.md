@@ -191,6 +191,6 @@ If a device becomes aware that it was revoked, it will trigger a wipe-out proces
 - **Device Keys:** A pair of public and private keys of a device, signed by the Root Public Key that controls the DID.
 - **Ephemeral Keys:** A temporary pair of public and private keys, signed by the Device Private Key.
 - **Session**: A unique public key stored locally by the IdentityManagerClient that identifies a visitor.
-- **Authenticated Session:** A session that was signed by the entity controlling the Device Key. The Session Private Key lives securely on the IdentityManager origin.
+- **Authenticated Session:** A Session that was signed by the entity controlling the Device Key. The Session Private Key lives securely on the IdentityManager local storage.
 - **IdentityManager**: An application that provides identification and authentication to the Peer-Star ecosystem.
 - **IdentityManagerClient**: A library used by Peer-Star applications that makes it easier to interact with the IdentityManager.
