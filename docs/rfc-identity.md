@@ -34,9 +34,9 @@ The owner of a DID can use the DID's private key to digitally sign artifacts. An
 
 A Verifiable Claim is a qualification, achievement, quality, or piece of information about an entity's background such as a name, government ID, payment provider, home address, or university degree. This standard is described in detail in the [W3C Verifiable Claims spec](https://www.w3.org/TR/verifiable-claims-data-model).
 
-By linking one or more Verifiable Claims to an identity, we are strengthening the credibility of the identity itself. Those claims may be self-signed or made by other entities.
+By issuing Verifiable Claims about an entity's identity, we are strengthening the credibility of the identity itself. Those claims may be issued by the owners themselves or by other identities.
 
-We will start off by leveraging self-signed Verifiable Claims based on social networks, similar to [Keybase](https://keybase.io/) claims. They are easy to setup and they deliver a good base for trusting identities. Later on we can expand to other types of Verifiable Claims as well, like claims emitted by third-parties.
+We will start off by leveraging self-issued and self-signed Verifiable Claims based on social networks, similar to [Keybase](https://keybase.io/) claims. They are easy to setup and they deliver a good base for trusting identities. Later on we can expand to other types of Verifiable Claims as well, like claims emitted by third-parties.
 
 ### Self-signed Key-chain
 
@@ -135,10 +135,9 @@ The exact way in how the claims will be stored is dependent on the DID method. F
 
 Peer-Star applications will use the IdentityManagerClient to manage the user's session.
 
-When bootstrapped, the IdentityManagerClient will read a pair of public and private keys, called the Session Keys, from the local storage. Alternatively, the Session Keys will be generated and stored in case they do not exist yet. Note that the Session Keys are considered layer 3 keys.
-The IdentityManagerClient then takes the Session Public Key and queries the IdentityManager to retrieve the session data associated to it. If the IdentityManager responds back with the session data, the user is authenticated and, as such, there's an Authenticated Session. If that's not the case, the application can request the user to authenticate via the IdentityManagerClient.
+When bootstrapped, the IdentityManagerClient will attempt to read the a Session Public Key from the local storage of the applications' origin. The IdentityManagerClient then takes the Session Public Key and queries the IdentityManager to retrieve the session data associated to it. If the IdentityManager responds back with the session data, the user is authenticated and, as such, there's an Authenticated Session. If the IdentityManager doesn't recognize that Session Public Key or if there's no Session Public Key in first place, there's no Authenticated Session, meaning that no user is authenticated. In such cases, the application may request the Identity Manager to authenticate the user, typically via a login button.
 
-When the application requests the IdentityManagerClient to authenticate the user, a popup pointing to the IdentityManager authenticate screen is open (via `window.open`). In this screen, the user is asked to choose an identity and to disclose some information, such as its name, its photo and a set of claims & proofs. If the user consented the disclosure of this information and entered the Device Private Key passphrase correctly, a new session for this application will be created and stored. The session data (including the signed Session Public Key) is sent back to the application. If the user denied the disclosure of the information, the operation will fail.
+When the application requests the IdentityManagerClient to authenticate the user, a popup pointing to the IdentityManager authenticate screen is open (via `window.open`). In this screen, the user is asked to choose an identity and to disclose some information, such as its name, its photo and a set of claims & proofs. If the user consented the disclosure of this information and entered the Device Private Key passphrase correctly, a new session for this application will be created and stored. The session data (including the Session Public Key and its signature signed by the Device Private Key) is sent back to the application. If the user denied the disclosure of the information, the operation will fail.
 In both scenarios, the popup is closed and the outcome is made available to the application.
 
 Applications might choose the TTL of a session depending on the degree of security they want to have.
@@ -150,7 +149,7 @@ Applications may want to sign artifacts, such as regular data or Ephemeral Keys.
 1. Sign with the Session Private Key
 2. Sign with the Device Private Key
 
-The first method is less intrusive and happens transparently to the user, but is less secure. More specifically, a robber who  stoled a device may still sign Ephemeral Keys with the Session Private Key as long as a session is valid (not expired). Relying parties will still see those signatures as valid until the DID owner revokes the stolen device.
+The first method is less intrusive and happens transparently to the user, but is less secure. More specifically, a robber who stoled a device may still sign Ephemeral Keys with the Session Private Key as long as a session is valid (not expired). Relying parties will still see those signatures as valid until the DID owner revokes the stolen device.
 
 The second method provides more security as the user is prompted for the Device Private Key passphrase, but it's more intrusive. The interaction is similar to the Authentication process, where a popup pointing to the sign screen gets open. The user either allows or denies the signing and the result gets back into the application. Please note that the passphrase might be stored in memory in the IdentityManager during a certain amount of time, which in turn makes this process less intrusive for subsequent signings.
 
@@ -172,11 +171,12 @@ If a device becomes aware that it was revoked, it will trigger a wipe-out proces
 
 **IdentityManager authentication flow diagram**
 
-![Authentication flow](https://user-images.githubusercontent.com/1017236/41130726-db9125b4-6aaf-11e8-9ec1-bd55c16a7ff2.png)
+![Authentication flow](https://i.imgur.com/uMAi2be.png)
 
 **IdentityManager authenticate screen diagram**
 
 ![Authenticate screen](https://i.imgur.com/kyvkrZE.png)
+
 
 **IdentityManager application mockups**
 
@@ -186,11 +186,11 @@ If a device becomes aware that it was revoked, it will trigger a wipe-out proces
 
 - **Entity:** A person, company, organization or equivalent that controls an identity.
 - **DID:** An identity identifier, which resolves to a DID-Document.
-- **DID-Document:** A JSON-LD document which contains information about an identity, such as public keys to be used to communicate with entity that controls the identity.
+- **DID-Document:** A JSON-LD document which contains information about an identity, such as public keys to be used to communicate with the entity that controls the identity.
 - **Root Keys:** A pair of public and private keys that control the DID.
 - **Device Keys:** A pair of public and private keys of a device, signed by the Root Public Key that controls the DID.
 - **Ephemeral Keys:** A temporary pair of public and private keys, signed by the Device Private Key.
-- **Session**: A unique pair of public and private keys stored locally by the IdentityManagerClient that identifies a visitor.
-- **Authenticated Session:** A session that was signed by the entity controlling the Device Key.
+- **Session**: A unique public key stored locally by the IdentityManagerClient that identifies a visitor.
+- **Authenticated Session:** A session that was signed by the entity controlling the Device Key. The Session Private Key lives securely on the IdentityManager origin.
 - **IdentityManager**: An application that provides identification and authentication to the Peer-Star ecosystem.
 - **IdentityManagerClient**: A library used by Peer-Star applications that makes it easier to interact with the IdentityManager.
