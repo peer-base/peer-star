@@ -46,7 +46,7 @@ In a simple configuration, the DID key (the one used to prove control of the DID
 - Over exposes the private key: A private key should be used as few times as possible. Using it a lot makes it easier for an attacker to gain access to the key.
 - If the key is compromised, the attacker is able to completely impersonate the real DID owner.
 
-For those reasons, we propose a mechanism where a master key pair is used to sign (authorize) other key pairs. The master key pair can then be used to sign others. This process can continue through many layers. The advantage of this mechanism is that if a key is compromised, only the keys that it signed need to be changed. All the other ones above it, remain safe.
+Alternatively, we propose a mechanism where a master key pair is used to sign (authorize) other key pairs. The master key pair can then be used to sign others. This process can continue through many layers. The advantage of this mechanism is that if a key is compromised, only the keys that it signed need to be changed. All the other ones above it, remain safe.
 
 In the first version of this proposal we envision three layers of keys, as shown in the figure below. The first, *layer 1* is the DID key, called the *Root Key*. The Root Key is the one used to create the DID and authorize *layer 2* keys. Each entity will use Peer-Star applications from different devices (laptop, smart-phone and others). For each device, an entity will have one key pair whose public key is signed by the _Root Key_. Those keys are called Device Keys and are _layer 2_ keys. Finally, Device Keys can be used to sign (authorize) new temporary keys, Ephemeral Keys, to be used by specific applications. These are _layer 3_ keys.
 
@@ -70,7 +70,7 @@ A relying party must always verify the signatures of the Key-Chain to be sure th
 - Check if the Root Public Key of the chain matches the DID Public Key.
 - Check if the Device Public Key is not flagged as revoked.
 
-At this point, a relying party just needs to prove that the entity owns the private key of the layer 3 key. This can easily be done by asking him to sign or decrypt a challenge.
+Still, more steps are necessary for a relying party to fully trust the entity. This is explained in the next section.
 
 ### Trusting an entity
 
@@ -85,7 +85,7 @@ After agreeing on a transport, Alice presents herself with her DID, her self-Sig
 3. Verify the Self-signed Key-chain as described in [Verifying the chain](#Verifying-the-chain)
 4. Check the signatures of the self-signed Verifiable Claims against the Root Public Key.
 5. Manually verify Alice's Verifiable Claims to see if they credible.
-6. If Alice uses different keys for encrypting and signing, send her a challenge encrypted with her Public Key for encryption and ask her to send back the decrypted challenge.
+6. If Alice uses different keys for encrypting, send her a challenge encrypted with her Public Key for encryption and ask her to send back the decrypted challenge.
 
 Please note that certain aspects of point `5.` can be done automatically by crawling the proofs and verifying the signatures against Alice's Root Public Key. Still, Bob must explicitly verify the proofs as an attacker might be trying to impersonate the real Alice with fake social profiles.
 
@@ -137,7 +137,7 @@ Peer-Star applications will use the IdentityManagerClient to manage the user's s
 
 When bootstrapped, the IdentityManagerClient will attempt to read the a Session Public Key from the local storage of the applications' origin. The IdentityManagerClient then takes the Session Public Key and queries the IdentityManager to retrieve the session data associated to it. If the IdentityManager responds back with the session data, the user is authenticated and, as such, there's an Authenticated Session. If the IdentityManager doesn't recognize that Session Public Key or if there's no Session Public Key in first place, there's no Authenticated Session, meaning that no user is authenticated. In such cases, the application may request the Identity Manager to authenticate the user, typically via a login button.
 
-When the application requests the IdentityManagerClient to authenticate the user, a popup pointing to the IdentityManager authenticate screen is open (via `window.open`). In this screen, the user is asked to choose an identity and to disclose some information, such as its name, its photo and a set of claims & proofs. If the user consented the disclosure of this information and entered the Device Private Key passphrase correctly, a new session for this application will be created and stored. The session data (including the Session Public Key and its signature signed by the Device Private Key) is sent back to the application. If the user denied the disclosure of the information, the operation will fail.
+When the application requests the IdentityManagerClient to authenticate the user, a popup pointing to the IdentityManager authenticate screen is open (via `window.open`). In this screen, the user is asked to choose an identity and to disclose some information, such as its name, its photo and a set of claims & proofs. If the user consented the disclosure of this information and entered the Device Private Key passphrase correctly, a new session for this application will be created and stored. The session data, including the Session Public Key and its signature signed by the Device Private Key, is sent back to the application. If the user denied the disclosure of the information, the operation will fail.
 In both scenarios, the popup is closed and the outcome is made available to the application.
 
 Applications might choose the TTL of a session depending on the degree of security they want to have.
@@ -176,7 +176,6 @@ If a device becomes aware that it was revoked, it will trigger a wipe-out proces
 **IdentityManager authenticate screen diagram**
 
 ![Authenticate screen](https://i.imgur.com/kyvkrZE.png)
-
 
 **IdentityManager application mockups**
 
