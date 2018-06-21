@@ -51,7 +51,7 @@ The DID spec states that DID methods must provide a way for the owner to rotate 
 Nevertheless, the DID spec advises DID methods to support adding delegate keys that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
 delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
 
-It's expected that the same entity will use Peer-Star applications from different devices, such as a desktop, laptop, smart-phone or others. For the DID methods that support delegate keys, each device should have its own key added as a delegate. In case the DID method does not support delegate keys, the owner key is used instead. In both cases, from now on, we will call these keys Device Keys.
+It's expected that the same entity will use Peer-Star applications from different devices, such as a desktop, laptop, smart-phone or others. For the DID methods that support delegate keys, each device should have its own key added as a delegate. In case the DID method does not support delegate keys, the Master Key is used instead. In both cases, from now on, we will call these keys Device Keys.
 
 #### Revocation
 
