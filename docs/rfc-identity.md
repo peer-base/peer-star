@@ -150,7 +150,7 @@ Ultimately, the application may choose between both methods for different situat
 
 Users will be able to revoke any application session listed on the identity's Authenticated Session list. Revoking a session will essentially delete the application session from the IdentityManager local storage.
 
-Even if a malicious application persists the session data for future use, it will be unable to sign artifacts, such as Ephemeral Keys, with the Device Private Key, rendering the application useless in those scenarios.
+Even if a malicious application persists the session data for future use, it will be unable to sign artifacts, such as Ephemeral Keys, with both the Session Key and the Device Key, rendering the application useless in those scenarios.
 
 ### Revoking a device
 
