@@ -5,10 +5,10 @@ This is a proposal for an identity management system for Peer-Star, named Peer-S
 *Authors*: André Cruz, João Santos, Pedro Teixeira
 
 1. [Standards & foundations](#standards--foundations)
-   1. [Decentralized Identifiers](#decentralized-identifiers-dids)
+   1. [Decentralized identifiers](#decentralized-identifiers-dids)
    1. [Self-signed Verifiable Claims](#self-signed-verifiable-claims)
-   1. [Self-signed Key-chain](#self-signed-key-chain)
-   1. [Trusting an entity](#trusting-an-entity)
+   1. [DID Delegates & devices](#did-delegates--devices)
+   1. [Using DID-Auth to prove control of the DID](#using-did-auth-to-prove-control-of-the-did)
 1. [Proposal: The IdentityManager](#proposal-the-identitymanager)
    1. [What is it?](#what-is-it)
    1. [Managing identities](#managing-identities)
@@ -22,13 +22,13 @@ This is a proposal for an identity management system for Peer-Star, named Peer-S
 
 ## Standards & foundations
 
-### Decentralized Identifiers (DIDs)
+### Decentralized identifiers (DIDs)
 
-A Decentralized Identifier (DID) is a string that uniquely maps to an identiy, e.g. `did:btcr:123-445-333`. This standard is fully described in the [W3C DID spec](https://w3c-ccg.github.io/did-spec/) and is being widely adopted to create digital identities.
+A Decentralized Identifier (DID) is a string that uniquely maps to an identity, e.g. `did:btcr:123-445-333`. This standard is fully described in the [W3C DID spec](https://w3c-ccg.github.io/did-spec/) and is being widely adopted to create digital identities.
 
-There are already several DID methods, such as uPort and Sovrin, which are listed in the [DID Method Registry](https://w3c-ccg.github.io/did-method-registry/). Each method has its own way to resolve a DID to a DID-Document. A DID-Document obeys a specified schema and it contains, among other things, a Public Key that entities can use to establish communication (encrypt, verify digital signatures) with the DID owner.
+There are already several DID methods, such as uPort and Sovrin, which are listed in the [DID Method Registry](https://w3c-ccg.github.io/did-method-registry/). Each method has its own way to resolve a DID to a DID-Document. A DID-Document obeys a specified schema and it contains, among other things, a set of public key that entities can use to establish communication (encrypt, verify digital signatures) with the DID owner.
 
-The owner of a DID can use the DID's private key to digitally sign artifacts. Any party can retrieve the DID-Document and verify the digital signature against the public key listed in the DID-Document.
+The owner of a DID can use the DID's private keys to digitally sign artifacts. Any party can retrieve the DID-Document and verify the digital signature against the public keys listed in the DID-Document.
 
 ### Self-signed Verifiable Claims
 
@@ -38,56 +38,43 @@ By issuing Verifiable Claims about an entity's identity, we are strengthening th
 
 We will start off by leveraging self-issued and self-signed Verifiable Claims based on social networks, similar to [Keybase](https://keybase.io/) claims. They are easy to setup and they deliver a good base for trusting identities. Later on we can expand to other types of Verifiable Claims as well, like claims emitted by third-parties.
 
-### Self-signed Key-chain
+### DID Delegates & devices
 
-In a simple configuration, the DID key (the one used to prove control of the DID) could be used to sign artifacts and to cypher communication. However, that solution is sub-optimal for the following reasons:
+In a simple configuration, there's only a key that owns the DID, called the Master Key. That key could be used to sign artifacts and to cypher communication. However, that solution is sub-optimal for the following reasons:
 
-- Does not offer Perfect Forward Secrecy: If an attacker manages to gain access to the private key, he/she is able to decypher all previous communications made to, and from, that entity's DID.
-- Over exposes the private key: A private key should be used as few times as possible. Using it a lot makes it easier for an attacker to gain access to the key.
-- If the key is compromised, the attacker is able to completely impersonate the real DID owner.
+1. Does not offer Perfect Forward Secrecy: If an attacker manages to gain access to the Master Key, he/she is able to decypher all previous communications made to, and from, that entity's DID.
+2. Over exposes the private key: A Master Key should be used as few times as possible. Using it a lot makes it easier for an attacker to gain access to it.
+3. If the Master Key is compromised, the attacker is able to completely impersonate the real DID owner.
 
-Alternatively, we propose a mechanism where a master key pair is used to sign (authorize) other key pairs. The master key pair can then be used to sign others. This process can continue through many layers. The advantage of this mechanism is that if a key is compromised, only the keys that it signed need to be changed. All the other ones above it, remain safe.
+The DID spec states that DID methods must provide a way for the owner to rotate keys, which solve `1` and `2`. The DID spec also states that DID methods must provide a way to recover the DID (e.g.: in case of theft), which solves `3`.
 
-In the first version of this proposal we envision three layers of keys, as shown in the figure below. The first, *layer 1* is the DID key, called the *Root Key*. The Root Key is the one used to create the DID and authorize *layer 2* keys. Each entity will use Peer-Star applications from different devices (laptop, smart-phone and others). For each device, an entity will have one key pair whose public key is signed by the _Root Key_. Those keys are called Device Keys and are _layer 2_ keys. Finally, Device Keys can be used to sign (authorize) new temporary keys, Ephemeral Keys, to be used by specific applications. These are _layer 3_ keys.
+Nevertheless, the DID spec advises DID methods to support adding delegate keys that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
+delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
 
-```
-(layer 1)  rootKey
-(layer 2)   |-- deviceKey1 {signed by rootKey}
-(layer 3)   |---- applicationKey1 {signed by deviceKey1}
-(layer 3)   |---- applicationKey2 {signed by deviceKey1}
-(layer 2)   |-- deviceKey_n_ {signed by rootKey}
-```
+It's expected that the same entity will use Peer-Star applications from different devices, such as a desktop, laptop, smart-phone or others. For the DID methods that support delegate keys, each device should have its own key added as a delegate. In case the DID method does not support delegate keys, the owner key is used instead. In both cases, from now on, we will call these keys Device Keys.
 
 #### Revocation
 
-It's important for the entity in control of the DID to revoke a Device Key in case of theft or other circumstances. Similarly to how public keys are made available in DID-Documents, revoked Public Device Keys of a DID should also be public. The way a revoked Device Public Key gets published and the way a relying party query the list of revoked devices depends on the DID method as well.
+As said earlier in this document, the entity in control of the DID may revoke a Device Key. Similarly to how non-revoked Public Device Keys keys are publicly listed in DID-Documents, revoked Public Device Keys should also be public. The reasoning is that a relying party must be able to verify signatures made the past and, as such, must be able to assert that the public key is associated to the DID, even if it's revoked.
 
-#### Verifying the chain
+As of now, the DID spec does not specifies how and where the revoked keys can be obtained. There's an [open issue](https://github.com/w3c-ccg/did-spec/issues/63) on the DID spec that brings this topic into discussion and, apparently, the W3C CCG working group is keen in listing revoked keys in the DID-Document.
 
-A relying party must always verify the signatures of the Key-Chain to be sure that the entity controlling the DID authorized a specific public key. This is a three step process:
+### Using DID-Auth to prove control of the DID
 
-- Verify the Public Key signature of each layer, starting from the Leaf Key up to the Root Key.
-- Check if the Root Public Key of the chain matches the DID Public Key.
-- Check if the Device Public Key is not flagged as revoked.
+Typical DApps flows require a relying party to trust another. We can leverage DIDs and self-Signed Verifiable Claims in an "handshake" ceremony. The ceremony should follow the [DID-Auth spec](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md).
 
-Still, more steps are necessary for a relying party to fully trust the entity. This is explained in the next section.
+To exemplify how [DID-Auth] works, consider the following example: Alice wants to share something secret with Bob.
 
-### Trusting an entity
+After agreeing on a transport, Alice presents herself with a DID, a Device Public Key, and a set of self-Signed Verifiable Claims. Alice does this by encrypting all this material, along with a nounce, with Bob's public key and signing her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
 
-Typical DApps flows require a relying party to trust another. We can leverage DIDs, self-Signed Verifiable Claims and self-signed Key-chains in an "handshake" ceremony.
+1. Decrypt Alice's message
+2. Resolve Alice's DID to a DID-Document
+3. Check if Alice's Device Public Key is listed in `authentication` property of the DID-Document
+4. Verify the message signature against her Device Public Key using the correct algorithm
+5. Verify the signatures of the self-signed Verifiable Claims against the public keys listed in the `publicKey` property of the DID-Document.
+6. Manually verify Alice's Verifiable Claims to see if they credible.
 
-Consider the following example: Alice wants to share something secret with Bob.
-
-After agreeing on a transport, Alice presents herself with her DID, her self-Signed Verifiable Claims and a self-signed Key-chain (linked list of public keys and signatures) to Bob. Alice does this by encrypting all this material, along with a nounce, with Bob's public key and signing it with her leaf private key (the last key on the chain). To trust Alice, Bob must:
-
-1. Decrypt Alice's message and check its signature against the Leaf Public Key.
-2. Resolve Alice's DID to a DID-Document which includes the Root Public Key.
-3. Verify the Self-signed Key-chain as described in [Verifying the chain](#Verifying-the-chain)
-4. Check the signatures of the self-signed Verifiable Claims against the Root Public Key.
-5. Manually verify Alice's Verifiable Claims to see if they credible.
-6. If Alice uses different keys for encrypting, send her a challenge encrypted with her Public Key for encryption and ask her to send back the decrypted challenge.
-
-Please note that certain aspects of point `5.` can be done automatically by crawling the proofs and verifying the signatures against Alice's Root Public Key. Still, Bob must explicitly verify the proofs as an attacker might be trying to impersonate the real Alice with fake social profiles.
+Please note that certain aspects of point `6.` can be done automatically by crawling the proofs and verifying the signatures against Alice's Public Keys. Still, Bob must explicitly verify the proofs as an attacker might be trying to impersonate the real Alice with fake social profiles.
 
 If all went good, Bob is pretty confident that Alice is the real Alice. For future "handshake" ceremonies to be faster, Bob can store Alice's DID and Device Public Key somewhere, like a contacts list.
 
@@ -97,33 +84,37 @@ Usability is a crucial aspect on this proposal as it played a very important rol
 
 On one hand, the experience for end-users should be intuitive, simple and familiar. Ideally, users should have little contact with private keys and most of the cryptographic operations should happen behind the scenes. On the other hand, developers building DApps should have an easy way to authenticate users.
 
+The IdentityManager packages emerging [Standards & foundations](#standards--foundations) into a intuitive and easy to use interface for end-users.
+
 ### What is it?
 
-The IdentityManager is a web-page hosted on IPFS and reachable via a specific URL, e.g.: https://peer-identity.io. The application will work completely offline thanks to the installation of a ServiceWorker.
+The IdentityManager is a web-page hosted on IPFS and reachable via a specific URL, e.g.: https://peer-identity.io. The application will work completely offline thanks to the installation of a ServiceWorker. By using the application, users will be able to:
 
-Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager it will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin.
+- Create identities on several DID methods
+- Import identities created on other devices
+- Manage Verifiable Claims of identities
+- Authenticate to dApps
 
-Using the `postMessage` API to directly communicate with the IdentityManager is a bit clunky. Instead, developers will use a library called IdentityManagerClient that abstracts all the communication layer with a intuitive API.
+Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager it will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin. Using the `postMessage` API to directly communicate with the IdentityManager is a bit clunky. Instead, developers will use a library called IdentityManagerClient that abstracts all the communication layer with a intuitive API.
 
 Moreover, any meaningful event on the IdentityManager, such as the removal of an identity, will be broadcasted to interested parties. This allows applications to immediately react to certain events by subscribing to them on the IdentityManager.
 
 Among others, the most important advantages of this solution are:
 
-- Doesn't require the Root Keys that control the DID to be used often, making them less vulnerable to theft as they can be kept safe.
 - Embraces several DID methods instead of being tied to a specific method.
+- Uses DID best practices, such as using delegate keys to associate devices.
 - Doesn't require any extensions, scanning of QRCodes, or any other unfriendly processes for daily use.
-- Requires little updates to data stored in blockchains, hence incurring less costs.
 - Acts like a "server" in the sense that sensitive information may be safely stored in it. Many DID methods require a secret for certain actions, e.g.: uPort requires an app secret to request normal and verified credentials.
-- Has a wide support among devices. If we make it a PWA, users may install the application in the OS itself, further enhancing the user experience.
+- Has a wide support among devices. If we make it a PWA, users may install the application in the OS itself, further enhancing the user experience. Later on, we can develop native mobile apps to support OS's that don't yet allow PWA to be installed natively.
 - Allows the user to choose between several identities when authenticating, useful for people that manage companies, organizations or similar.
 
 ### Managing identities
 
-Users will be able to associate one or more identities using their preferred DID method. They will be guided throughout the process according to the chosen DID method. Once they complete it, they will have successfully created a Device Key associated with the identity Root Key (via signing).
+Users will be able to create identities using their preferred DID method or associate existing ones. They will be guided throughout the process according to the chosen DID method. Once they complete it, they will have successfully created a Device Key.
 
 All the Device Private Keys will be encrypted with a passphrase to improve security. Even if a device gets stolen, the robber won't be able to use most features without the passphrase as all the information stored locally will be encrypted with the Device Public Key. This gives time for the owner of the Identity to revoke the compromised device in the IdentityManager of another device.
 
-Because the identity was linked to this device at setup time, and depending on the DID method, profile information and verifiable claims might become stale. For this reason, users will be able to sync up with their Root Identity to update any stale data.
+Because the identity was linked to this device at setup time, and depending on the DID method, profile information and verifiable claims might become stale. For this reason, users will be able to sync up with their identity to update any stale data.
 
 ### Managing Verifiable Claims
 
@@ -163,7 +154,7 @@ Even if a malicious application persists the session data for future use, it wil
 
 ### Revoking a device
 
-Users must be able to revoke a device associated with an identity. To do so, users may see the list of devices associated with an identity and revoke any device of that list, including the device from which they are interacting. This will require interacting with the DID method (Root Private Key) to publish the device being revoked.
+Users must be able to revoke a device associated with an identity. To do so, users may see the list of devices associated with an identity and revoke any device of that list, including the device from which they are interacting. This will require interacting with the DID method (Master Private Key) to publish the device being revoked.
 
 If a device becomes aware that it was revoked, it will trigger a wipe-out process where all the identity data stored locally will be deleted, including the Device Key and Authenticated Sessions.
 
@@ -186,9 +177,9 @@ If a device becomes aware that it was revoked, it will trigger a wipe-out proces
 - **Entity:** A person, company, organization or equivalent that controls an identity.
 - **DID:** An identity identifier, which resolves to a DID-Document.
 - **DID-Document:** A JSON-LD document which contains information about an identity, such as public keys to be used to communicate with the entity that controls the identity.
-- **Root Keys:** A pair of public and private keys that control the DID.
-- **Device Keys:** A pair of public and private keys of a device, signed by the Root Public Key that controls the DID.
-- **Ephemeral Keys:** A temporary pair of public and private keys, signed by the Device Private Key.
+- **Master Keys:** A pair of public and private keys that owns the identity (owns the DID).
+- **Device Keys:** A pair of public and private keys of a device that can act on behalf of the identity owner.
+- **Ephemeral Keys:** A temporary pair of public and private keys, signed by the Device Private Key or the Session Private Key.
 - **Session**: A unique public key stored locally by the IdentityManagerClient that identifies a visitor.
 - **Authenticated Session:** A Session that was signed by the entity controlling the Device Key. The Session Private Key lives securely on the IdentityManager local storage.
 - **IdentityManager**: An application that provides identification and authentication to the Peer-Star ecosystem.
