@@ -48,8 +48,8 @@ In a simple configuration, there's only a key that owns the DID, called the Mast
 
 The DID spec states that DID methods must provide a way for the owner to rotate keys, which solves `2`. The DID spec also states that DID methods must provide a way to recover the DID (e.g.: in case of theft), which solves `3`.
 
-Nevertheless, the [DID specification](https://w3c-ccg.github.io/did-spec/) advises DID methods to support adding delegate keys that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
-delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
+Nevertheless, the [DID specification](https://w3c-ccg.github.io/did-spec/) advises DID methods to support adding [delegate keys](https://w3c-ccg.github.io/did-spec/#authorization-and-delegation) that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
+Delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
 
 It's expected that the same entity will use Peer-Star applications from different devices, such as a desktop, laptop, smart-phone, or others. For the DID methods that support delegate keys, each device should have its own key added as a delegate. In case the DID method does not support delegate keys, the Master Key is used instead. In both cases, from now on, we will call these keys _Device Keys_.
 
@@ -65,14 +65,14 @@ Typical DApps flows require a relying party to trust another. We can leverage DI
 
 To illustrate how [DID-Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) works, consider the following example: Alice wants to share a secret with Bob.
 
-After agreeing on a transport, Alice presents herself with a DID, a Device Public Key, and a set of self-signed Verifiable Claims. Alice does this by encrypting all this material, along with a nonce, with Bob's public key and signing her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
+After agreeing on a transport, Alice presents herself with a DID, a Device Public Key, and a set of self-signed Verifiable Claims. Alice does this by encrypting all this material, along with a nonce, with Bob's public key and signing with her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
 
 1. Decrypt Alice's message
 2. Resolve Alice's DID to a DID-Document
 3. Check if Alice's Device Public Key is listed in `authentication` property of the DID-Document
 4. Verify the message signature against her Device Public Key using the correct algorithm
 5. Verify the signatures of the self-signed Verifiable Claims against the public keys listed in the `publicKey` property of the DID-Document.
-6. Manually verify Alice's Verifiable Claims to see if they credible.
+6. Manually verify Alice's Verifiable Claims to see if they are credible.
 
 Please note that certain aspects of point `6.` can be done automatically by crawling the proofs and verifying the signatures against Alice's Public Keys. Still, Bob must explicitly verify the proofs as an attacker might be trying to impersonate the real Alice with fake social profiles.
 
@@ -93,9 +93,13 @@ The IdentityManager is a web-page hosted on IPFS and reachable via a specific UR
 - Create identities on several DID methods
 - Import identities created on other devices
 - Manage Verifiable Claims of identities
-- Authenticate to dApps
+- Authenticate to dApps (sessions)
 
-Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager it will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin. Using the `postMessage` API to directly communicate with the IdentityManager is a bit clunky. Instead, developers will use a library called IdentityManagerClient that abstracts all the communication layer with an intuitive API.
+Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager it will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin.
+
+All private keys, such as Device Private Keys and Session Private Keys, will be safely stored in the IdentityManager local storage. Applications must interact with the IdentityManager to sign or decypher payload that uses such keys.
+
+Using the `postMessage` API to directly communicate with the IdentityManager is a bit clunky. Instead, developers will use a library called IdentityManagerClient that abstracts all the communication layer with an intuitive API.
 
 Moreover, any meaningful event on the IdentityManager, such as the removal of an identity, will be broadcasted to interested parties. This allows applications to immediately react to certain events by subscribing to them on the IdentityManager.
 
@@ -105,14 +109,16 @@ Among others, the most important advantages of this solution are:
 - Uses DID best practices, such as using delegate keys to associate devices.
 - Doesn't require any extensions, scanning of QRCodes, or any other unfriendly processes for daily use.
 - Acts like a "server" in the sense that sensitive information may be safely stored in it. Many DID methods require a secret for certain actions, e.g.: uPort requires an app secret to request normal and verified credentials.
-- Has a wide support among devices. If we make it a PWA, users may install the application in the OS itself, further enhancing the user experience. Later on, we can develop native mobile apps to support OS's that don't yet allow PWA to be installed natively.
+- Has a wide support among devices. If we make it a Progressive Web App (PWA), users may install the application in the OS itself, further enhancing the user experience. Later on, we can develop native mobile apps to support OS's that don't yet allow PWAs to be installed natively.
 - Allows the user to choose between several identities when authenticating, useful for people that manage companies, organizations or similar.
 
 ### Managing identities
 
 Users will be able to create identities using their preferred DID method or associate existing ones. They will be guided throughout the process according to the chosen DID method. Once they complete it, they will have successfully created a Device Key.
 
-All the Device Private Keys will be encrypted with a passphrase to improve security. Even if a device gets stolen, the robber won't be able to use most features without the passphrase as all the information stored locally will be encrypted with the Device Public Key. This gives time for the owner of the Identity to revoke the compromised device in the IdentityManager of another device.
+All the Device Private Keys will be locked to improve security. One such locking method is using a passphrase to encrypt the Device Private Key. Other methods, such as [biometric signatures](https://en.wikipedia.org/wiki/Electronic_signature#Biometric_signature), can be used instead if they prove to be effective and are available in the user's device.
+
+Even if a device gets stolen, the robber won't be able to use most features without unlocking the Device Private Key as all the information stored locally will be encrypted with the Device Public Key. This gives time for the owner of the Identity to revoke the compromised device in the IdentityManager of another device.
 
 Because the identity was linked to this device at setup time, and depending on the DID method, profile information and verifiable claims might become stale. For this reason, users will be able to sync up with their identity to update any stale data.
 
@@ -124,7 +130,7 @@ The exact way in how the claims will be stored is dependent on the DID method. F
 
 ### Authentication on applications
 
-Peer-Star applications will use the IdentityManagerClient to manage the user's session.
+Peer-Star applications will use the IdentityManagerClient to manage the user's session via Session Keys.
 
 When bootstrapped, the IdentityManagerClient will attempt to read the Session Public Key from the local storage of the applications' origin. The IdentityManagerClient then takes the Session Public Key and queries the IdentityManager to retrieve the session data associated to it. If the IdentityManager responds back with the session data, the user is authenticated and, as such, there's an Authenticated Session. If the IdentityManager doesn't recognize that Session Public Key or if there's no Session Public Key in the first place, there's no Authenticated Session, meaning that no user is authenticated. In such cases, the application may request the Identity Manager to authenticate the user, typically via a login button.
 
@@ -148,9 +154,10 @@ Ultimately, the application may choose between both methods for different situat
 
 ### Managing application sessions
 
-Users will be able to revoke any application session listed on the identity's Authenticated Session list. Revoking a session will essentially delete the application session from the IdentityManager local storage.
+Users will be able to revoke any session listed on the identity's Authenticated Session list at any time. Revoking a session will essentially delete the application session from the IdentityManager local storage.
+Additionally, each session has a TTL that limits its lifespan and states when they expire. Expired sessions are automatically revoked.
 
-Even if a malicious application persists the session data for future use, it will be unable to sign artifacts, such as Ephemeral Keys, with both the Session Key and the Device Key, rendering the application useless in those scenarios.
+Applications will be unable to sign artifacts or decypher payload if their sessions are revoked or non-existent. This is guaranteed by declining such requests made by applications to the IdentityManager.
 
 ### Revoking a device
 
