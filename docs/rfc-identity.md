@@ -46,7 +46,7 @@ In a simple configuration, there's only a key that owns the DID, called the Mast
 2. Over exposes the private key: A Master Key should be used as few times as possible. Using it a lot makes it easier for an attacker to gain access to it.
 3. If the Master Key is compromised, the attacker is able to completely impersonate the real DID owner.
 
-The DID spec states that DID methods must provide a way for the owner to rotate keys, which solves `2`. The DID spec also states that DID methods must provide a way to recover the DID (e.g.: in case of theft), which solves `3`.
+The DID spec states that DID methods must provide a way for the owner to rotate keys, which solves `2`. The DID spec also states that DID methods should provide a way to recover the DID (e.g.: in case of theft) via trusted parties, which solves `3`.
 
 Nevertheless, the [DID specification](https://w3c-ccg.github.io/did-spec/) advises DID methods to support adding [delegate keys](https://w3c-ccg.github.io/did-spec/#authorization-and-delegation) that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
 Delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
@@ -65,7 +65,7 @@ Typical DApps flows require a relying party to trust another. We can leverage DI
 
 To illustrate how [DID-Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) works, consider the following example: Alice wants to share a secret with Bob.
 
-After agreeing on a transport, Alice presents herself with a DID, a Device Public Key, and a set of self-signed Verifiable Claims. Alice does this by encrypting all this material, along with a nonce, with Bob's public key and signing with her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
+After agreeing on a transport, Alice introduces herself with a DID, a Device Public Key, and a set of self-signed Verifiable Claims. Alice does this by encrypting all this material, along with a nonce, with Bob's public key and signing with her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
 
 1. Decrypt Alice's message
 2. Resolve Alice's DID to a DID-Document
@@ -95,7 +95,7 @@ The IdentityManager is a web-page hosted on IPFS and reachable via a specific UR
 - Manage Verifiable Claims of identities
 - Authenticate to dApps (sessions)
 
-Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager it will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin.
+Because it runs on its own domain, it provides a sandboxed environment where access to functionality and data is completely controlled. More specifically, all interactions made with the IdentityManager will be made via [`postMessage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) where control and data segmentation is made via the messages' origin.
 
 All private keys, such as Device Private Keys and Session Private Keys, will be safely stored in the IdentityManager local storage. Applications must interact with the IdentityManager to sign or decypher payload that uses such keys.
 
