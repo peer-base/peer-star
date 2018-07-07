@@ -4,13 +4,13 @@
 |                                | uPort    | Sovrin   | Blockstack | ERC-725  |
 | --------                       | -------- | -------- | ---------- | -------- |
 | Identity Wallet UI             | ✔️       | ❌ <sup>[1]</sup>       | ✔️        | ❌ <sup>[2]</sup>   |
-| P2P-friendly Authentication    | ❌       | ? <sup>[1]</sup>       | ⚠️ <sup>[3]</sup>         | ? <sup>[4]</sup>   |
+| P2P-friendly Authentication    | ❌       | ❓ <sup>[1]</sup>       | ⚠️ <sup>[3]</sup>         | ❓ <sup>[4]</sup>   |
 | Verifiable Claims              | ⚠️ <sup>[5]</sup>   | ✔️      | ⚠️ <sup>[6]</sup>        | ⚠️ <sup>[7]</sup>   |
 | Aliasing                       | ❌       | ✔️        | ❌         | ❌       |
 | Delegate Keys                  | ❌ <sup>[8]</sup>    | ✔️      | ❌         | ✔️       |
 | Key Rotation & Revocation      | ✔️ <sup>[9]</sup>    | ✔️      |  ❌          | ✔️          |
-| Social-Key Recovery            | ?         | ✔️      | ❌            | ✔️        |
-| Costs                          | $        | ?         | $$ <sup>[10]</sup>        | $$$       |
+| Social-Key Recovery            | ❓         | ✔️      | ❌            | ✔️        |
+| Costs                          | $        | ❓         | $$ <sup>[10]</sup>        | $$$       |
 
 - <sup>**[1]**</sup> Evernym is developing connect.me which will provide a Wallet for Sovrin.
 - <sup>**[2]**</sup> [OriginProtocol](https://www.originprotocol.com/en) developed a "playground" to demonstrate the potential of the DID method, but it's not production ready nor enables users to authenticate to dApps: https://erc725.originprotocol.com.
