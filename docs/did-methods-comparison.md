@@ -12,7 +12,7 @@
 | Social-Key Recovery            | ❓         | ✔️      | ❌            | ✔️        |
 | Costs                          | $        | ❓         | $$ <sup>[10]</sup>        | $$$       |
 
-- <sup>**[1]**</sup> Evernym is developing connect.me which will provide a Wallet for Sovrin.
+- <sup>**[1]**</sup> Sovrin doesn't have a Wallet app yet but Evernym is developing connect.me which is in closed beta.
 - <sup>**[2]**</sup> [OriginProtocol](https://www.originprotocol.com/en) developed a "playground" to demonstrate the potential of the DID method, but it's not production ready nor enables users to authenticate to dApps: https://erc725.originprotocol.com.
 - <sup>**[3]**</sup> It's unclear how one can prove control over the DID: https://forum.blockstack.org/t/got-a-few-questions-considering-using-blockstack/5608.
 - <sup>**[4]**</sup> There's no authentication/client libraries that implement `erc725` yet.
