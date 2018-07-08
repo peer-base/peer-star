@@ -6,7 +6,7 @@
 | Identity Wallet UI             | ✔️       | ❌ <sup>[1]</sup>       | ✔️        | ❌ <sup>[2]</sup>   |
 | P2P-friendly Authentication    | ❌       | ❓ <sup>[1]</sup>       | ⚠️ <sup>[3]</sup>         | ❓ <sup>[4]</sup>   |
 | Verifiable Claims              | ⚠️ <sup>[5]</sup>   | ✔️      | ⚠️ <sup>[6]</sup>        | ⚠️ <sup>[7]</sup>   |
-| Aliasing                       | ❌       | ✔️        | ❌         | ❌       |
+| Aliasing                       | ❌       | ❌        | ✔️         | ❌       |
 | Delegate Keys                  | ❌ <sup>[8]</sup>    | ✔️      | ❌         | ✔️       |
 | Key Rotation & Revocation      | ✔️ <sup>[9]</sup>    | ✔️      |  ❌          | ✔️          |
 | Social-Key Recovery            | ❓         | ✔️      | ❌            | ✔️        |
