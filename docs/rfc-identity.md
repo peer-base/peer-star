@@ -167,15 +167,14 @@ Any party might verify the authenticity and authorship of artifacts signed by ot
 
 - The verification of an artifact signed by the Session Public Key is made by:
 
-    1. Verifying the signature of the artifact against the Session Public Key of the author
-    2. Verifying the signature of the Session Public Key of the author against the Device Public Key
-    3. Verifying if the Device Public Key is present in the DID document associated with the DID
-
+    1. Verifying the signature of the artifact against the Session Public Key of the author.
+    2. Verifying the signature of the Session Public Key of the author against the Device Public Key of the author. This proves that the Session Public Key was authorized by the Device Public Key.
+    3. Verifying if the Device Public Key of the author is present in the DID document associated with the DID. This proves that the Device Public Key was authorized by the Identity (author).
 
 - The verification of an artifact signed by the Device Public Key is made by:
 
-    1. Verifying the signature of the artifact against the Session Public Key of the author
-    2. Verifying if the Device Public Key is present in the DID document associated with the DID
+    1. Verifying the signature of the artifact against the Device Public Key of the author.
+    2. Verifying if the Device Public Key of the author is present in the DID document associated with the DID. This proves that the Device Public Key was authorized by the Identity (author).
 
 There will be functions offered by the IdentityManagerClient to verify signatures using the processes described above.
 
