@@ -161,6 +161,24 @@ The second method provides more security as the user is prompted for the Device 
 
 Ultimately, the application may choose between both methods for different situations depending on the security degree they want to have.
 
+#### Verifying signatures
+
+Any party might verify the authenticity and authorship of artifacts signed by other parties.
+
+- The verification of an artifact signed by the Session Public Key is made by:
+
+    1. Verify the signature of the artifact against the Session Public Key of author
+    2. Verify the signature of the Session Public Key of the author against the Device Public Key
+    3. Verify if the Device Public Key is present in the DID document associated with the DID
+
+
+- The verification of an artifact signed by the Device Public Key is made by:
+
+    1. Verify the signature of the artifact against the Session Public Key of author
+    2. Verify if the Device Public Key is present in the DID document associated with the DID
+
+There will be functions offered by the IdentityManagerClient to verify signatures using the processes described above.
+
 ### Managing application sessions
 
 Users will be able to revoke any session listed on the identity's Authenticated Session list at any time. Revoking a session will essentially delete the application session from the IdentityManager local storage.
