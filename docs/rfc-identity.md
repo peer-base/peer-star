@@ -26,9 +26,18 @@ This is a proposal for an identity management system for Peer-Star, named Peer-S
 
 A Decentralized Identifier (DID) is a string that uniquely maps to an identity, e.g. `did:btcr:123-445-333`. This standard is fully described in the [W3C DID spec](https://w3c-ccg.github.io/did-spec/) and is being widely adopted to create digital identities.
 
-There are already several DID methods, such as uPort and Sovrin, which are listed in the [DID Method Registry](https://w3c-ccg.github.io/did-method-registry/). Each method has its own way to resolve a DID to a DID-Document. A DID-Document obeys a specified schema and it contains, among other things, a set of public keys that entities can use to establish communication (encrypt, verify digital signatures) with the DID owner.
+![DID Syntax](https://i.imgur.com/MRLCi8v.png)
 
-The owner of a DID can use the DID's private keys to digitally sign artifacts. Any party can retrieve the DID-Document and verify the digital signature against the public keys listed in the DID-Document.
+Each method has its own way to resolve a DID to a DID-Document. A DID-Document obeys a specified schema and it contains, among other things, a set of public keys that entities can use to establish communication (encrypt, verify digital signatures) with the DID owner. There are already several DID methods, such as uPort and Sovrin, which are listed in the [DID Method Registry](https://w3c-ccg.github.io/did-method-registry/).
+
+The DID owner can use the DID's private keys to digitally sign artifacts. Any party can retrieve the DID-Document and verify the digital signature against the public keys listed in the DID-Document.
+
+
+In summary:
+
+- A DID is a persistent and immutable ID - underlying public keys change while DIDs don't
+- It doesn't require a central authority to change the attributes of the DID Document
+- Ownership of the DID can be cryptographically verified
 
 ### Self-signed Verifiable Claims
 
