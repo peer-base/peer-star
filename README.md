@@ -12,11 +12,9 @@ Distributed Applications and their internal building blocks exposed as reusable 
 
 ## Building blocks
 
-- [peer-pad-core](https://github.com/ipfs-shipyard/peer-pad-core)
-- [peer-crdt](https://github.com/ipfs-shipyard/peer-crdt)
-- [peer-crdt-ipfs](https://github.com/ipfs-shipyard/peer-crdt-ipfs)
-- [peer-crdt-bind-codemirror](https://github.com/ipfs-shipyard/peer-crdt-bind-codemirror)
+- [peer-star-app](https://github.com/ipfs-shipyard/peer-star-app): Peer-Star App support for real-time collaborative DApps built on top of IPFS
+- [delta-crdts](https://github.com/ipfs-shipyard/js-delta-crdts): Delta state-based CRDTs in Javascript
 
 ## Examples
 
-- [peer-crdt-example](https://github.com/ipfs-shipyard/peer-crdt-example)
+- [peer-star-app/examples](https://github.com/ipfs-shipyard/peer-star-app/examples)
