@@ -58,7 +58,7 @@ In a simple configuration, there's only a key that owns the DID, called the Mast
 The DID spec states that DID methods must provide a way for the owner to rotate keys, which solves `2`. The DID spec also states that DID methods should provide a way to recover the DID (e.g.: in case of theft) via trusted parties, which solves `3`.
 
 Nevertheless, the [DID specification](https://w3c-ccg.github.io/did-spec/) advises DID methods to support adding [delegate keys](https://w3c-ccg.github.io/did-spec/#authorization-and-delegation) that can act on behalf of the identity, but with granular capabilities. As an example, the [erc725](https://github.com/ethereum/EIPs/issues/725) DID method has such feature via adding keys with the `action` type, allowing such keys to perform signing or authentication.
-Delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
+Delegate public keys will be listed in the DID-Document as well, which improves interoperability and compatibility with many other specs in the ecosystem, such as the [DID Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/final-documents/did-auth.pdf) and [Identity Hubs](https://github.com/decentralized-identity/hubs/blob/master/explainer.md).
 
 It's expected that the same entity will use Peer-Star applications from different devices, such as a desktop, laptop, smart-phone, or others. For the DID methods that support delegate keys, each device should have its own key added as a delegate. In case the DID method does not support delegate keys, the Master Key is used instead. In both cases, from now on, we will call these keys _Device Keys_.
 
@@ -70,9 +70,9 @@ As of now, the DID spec does not specify how and where the revoked keys can be o
 
 ### Using DID-Auth to prove control of the DID
 
-Typical DApps flows require a relying party to trust another. We can leverage DIDs and self-signed Verifiable Claims in a "handshake" ceremony. The ceremony should follow the [DID-Auth spec](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md).
+Typical DApps flows require a relying party to trust another. We can leverage DIDs and self-signed Verifiable Claims in a "handshake" ceremony. The ceremony should follow the [DID-Auth spec](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/final-documents/did-auth.pdf).
 
-To illustrate how [DID-Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/draft-documents/did_auth_draft.md) works, consider the following example: Alice wants to share a secret with Bob.
+To illustrate how [DID-Auth](https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-spring2018/blob/master/final-documents/did-auth.pdf) works, consider the following example: Alice wants to share a secret with Bob.
 
 After agreeing on a transport, Alice introduces herself with a DID, a Device Public Key, and a set of self-signed Verifiable Claims. Alice does this by encrypting all this material, along with a nonce, with Bob's public key and signing with her `authentication` key (a key present in the DID-Document under the `authentication` property). To trust Alice, Bob must:
 
