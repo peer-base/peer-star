@@ -66,7 +66,7 @@ It's expected that the same entity will use Peer-Star applications from differen
 
 As previously stated, the entity in control of the DID may revoke a Device Key. Similarly to how non-revoked Public Device Keys keys are publicly listed in DID-Documents, revoked Public Device Keys should also be public. This is because a relying party must be able to verify signatures made in the past and, as such, must be able to assert that the public key is associated to the DID, even if it's revoked.
 
-As of now, the DID spec does not specify how and where the revoked keys can be obtained. There's an [open issue](https://github.com/w3c-ccg/did-spec/issues/63) on the DID spec that brings this topic into the discussion and the W3C CCG working group is keen in listing revoked keys in the DID-Document.
+As of now, the DID spec does not specify how and where the revoked keys can be obtained. There's an [open issue](https://github.com/w3c-ccg/did-spec/issues/96) on the DID spec that brings this topic into the discussion and the W3C CCG working group.
 
 ### Using DID-Auth to prove control of the DID
 
