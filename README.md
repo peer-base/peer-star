@@ -16,8 +16,9 @@ Distributed Applications and their internal building blocks exposed as reusable 
 - [delta-crdts](https://github.com/ipfs-shipyard/js-delta-crdts): Delta state-based CRDTs in Javascript
 - [js-ipfs](https://github.com/ipfs/js-ipfs): Used for peer discovery, process addressing, local persistence, identity, ...
 
-## Other  libraries and tools
+## Libraries and tools
 
+- [pinner](https://github.com/ipfs-shipyard/peer-star-app#pinner): Pins collaborations for a given app.
 - [peer-star-react](https://github.com/ipfs-shipyard/peer-star-react): React components for Peer-* apps
 - [peer-star-network-vis](https://github.com/ipfs-shipyard/peer-star-network-vis): Peer-* collaboration network visualisation
 - [peer-star-network-vis-react](https://github.com/ipfs-shipyard/peer-star-network-vis-react): React component for network and stats visualization for a Peer-* collaboration
