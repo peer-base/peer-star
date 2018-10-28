@@ -7,8 +7,7 @@ Distributed Applications and their internal building blocks exposed as reusable 
 ## Applications
 
 - [peer-pad](https://github.com/ipfs-shipyard/peer-pad)
-- [peer-flipchart](https://github.com/ipfs-shipyard/peer-flipchart)
-- [peer-blog](https://github.com/ipfs-shipyard/peer-blog)
+- [discussify](https://github.com/ipfs-shipyard/https://github.com/ipfs-shipyard/discussify-browser-extension)
 
 ## Building blocks
 
@@ -16,7 +15,7 @@ Distributed Applications and their internal building blocks exposed as reusable 
 - [delta-crdts](https://github.com/ipfs-shipyard/js-delta-crdts): Delta state-based CRDTs in Javascript
 - [js-ipfs](https://github.com/ipfs/js-ipfs): Used for peer discovery, process addressing, local persistence, identity, ...
 
-## Libraries and tools
+## Other Libraries and tools
 
 - [pinner](https://github.com/ipfs-shipyard/peer-star-app#pinner): Pins collaborations for a given app.
 - [peer-star-react](https://github.com/ipfs-shipyard/peer-star-react): React components for Peer-* apps
