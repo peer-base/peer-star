@@ -7,7 +7,7 @@ Distributed Applications and their internal building blocks exposed as reusable 
 ## Applications
 
 - [peer-pad](https://github.com/ipfs-shipyard/peer-pad)
-- [discussify](https://github.com/ipfs-shipyard/https://github.com/ipfs-shipyard/discussify-browser-extension)
+- [discussify](https://github.com/ipfs-shipyard/discussify-browser-extension)
 
 ## Building blocks
 
