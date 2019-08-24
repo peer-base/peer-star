@@ -24,4 +24,4 @@ Distributed Applications and their internal building blocks exposed as reusable 
 
 ## Examples
 
-- [peer-star-app/examples](https://github.com/ipfs-shipyard/peer-star-app/examples)
+- [peer-star-app/examples](https://github.com/peer-base/peer-base/tree/master/examples/react-app)
